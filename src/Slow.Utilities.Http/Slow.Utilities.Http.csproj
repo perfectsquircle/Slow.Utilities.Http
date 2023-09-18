@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;netstandard2.0;net472</TargetFrameworks>
+    <DisableImplicitFrameworkReferences>enable</DisableImplicitFrameworkReferences>
+    
+    <!-- NuGet Configuration -->
+    <PackageId>Slow.Utilities.Http</PackageId>
+    <Version>0.1.0</Version>
+    <Description>Simple HTTP utilities to make using HttpClient easier.</Description>
+    <RepositoryUrl>https://github.com/perfectsquircle/Slow.Utilities.Http</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net472' ">
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+</Project>
