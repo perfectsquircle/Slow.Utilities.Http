@@ -25,9 +25,15 @@ public class HttpRequestBuilder
         return this;
     }
 
-    public HttpRequestBuilder WithPath(string path, params object[] args)
+    public HttpRequestBuilder WithPath(FormattableString path)
     {
-        _pathAndQueryBuilder.WithPath(path, args);
+        _pathAndQueryBuilder.WithPath(path);
+        return this;
+    }
+
+    public HttpRequestBuilder WithPathRaw(string path)
+    {
+        _pathAndQueryBuilder.WithPathRaw(path);
         return this;
     }
 
@@ -67,6 +73,12 @@ public class HttpRequestBuilder
         return this;
     }
 
+    public HttpRequestBuilder WithJsonContent<T>(T inputValue, MediaTypeHeaderValue mediaType = null, JsonSerializerOptions options = null)
+    {
+        _content = JsonContent.Create<T>(inputValue, mediaType, options);
+        return this;
+    }
+
     public HttpRequestBuilder WithFormUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
     {
         _content = new FormUrlEncodedContent(nameValueCollection);
@@ -98,16 +110,16 @@ public class HttpRequestBuilder
 
     public static implicit operator HttpRequestMessage(HttpRequestBuilder b) => b.Build();
 
-    public static HttpRequestBuilder Get(string path, params object[] args) => new HttpRequestBuilder().WithMethod(HttpMethod.Get).WithPath(path, args);
-    public static HttpRequestBuilder Put(string path, params object[] args) => new HttpRequestBuilder().WithMethod(HttpMethod.Put).WithPath(path, args);
-    public static HttpRequestBuilder Post(string path, params object[] args) => new HttpRequestBuilder().WithMethod(HttpMethod.Post).WithPath(path, args);
-    public static HttpRequestBuilder Delete(string path, params object[] args) => new HttpRequestBuilder().WithMethod(HttpMethod.Delete).WithPath(path, args);
+    public static HttpRequestBuilder Get(FormattableString path) => new HttpRequestBuilder().WithMethod(HttpMethod.Get).WithPath(path);
+    public static HttpRequestBuilder Put(FormattableString path) => new HttpRequestBuilder().WithMethod(HttpMethod.Put).WithPath(path);
+    public static HttpRequestBuilder Post(FormattableString path) => new HttpRequestBuilder().WithMethod(HttpMethod.Post).WithPath(path);
+    public static HttpRequestBuilder Delete(FormattableString path) => new HttpRequestBuilder().WithMethod(HttpMethod.Delete).WithPath(path);
 #if NET6_0_OR_GREATER
-    public static HttpRequestBuilder Patch(string path, params object[] args) => new HttpRequestBuilder().WithMethod(HttpMethod.Patch).WithPath(path, args);
+    public static HttpRequestBuilder Patch(FormattableString path) => new HttpRequestBuilder().WithMethod(HttpMethod.Patch).WithPath(path);
 #endif
 
 #if NETSTANDARD2_0
-    public static HttpRequestBuilder Patch(string path, params object[] args) => new HttpRequestBuilder().WithMethod(new HttpMethod("PATCH")).WithPath(path, args);
+    public static HttpRequestBuilder Patch(FormattableString path) => new HttpRequestBuilder().WithMethod(new HttpMethod("PATCH")).WithPath(path);
 #endif
 
     public override string ToString()

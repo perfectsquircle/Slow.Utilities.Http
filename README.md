@@ -9,11 +9,15 @@ Examples of using HttpRequestBuilder:
 ```csharp
 using static Slow.Utilities.Http.HttpRequestBuilder;
 
-var getRequest = Get("api/v1/things")
+var getRequest = Get($"api/v1/things")
     .WithQueryParameter("page", 3);
 var getResponse = await httpClient.SendAsync(getRequest);
 
-var postRequest = Post("api/v1/things")
+var getRequest2 = Get($"api/v1/thing/{thingId}")
+    .WithQueryParameter("page", 3);
+var getResponse2 = await httpClient.SendAsync(getRequest2);
+
+var postRequest = Post($"api/v1/things")
     .WithJsonContent(new { ThingId = 1, ThingName = "foo" });
 var postResponse = await httpClient.SendAsync(getRequest);
 

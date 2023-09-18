@@ -14,13 +14,19 @@ public class PathAndQueryBuilder
         _query = HttpUtility.ParseQueryString(string.Empty);
     }
 
-    public PathAndQueryBuilder WithPath(string path, params object[] args)
+    public PathAndQueryBuilder WithPath(FormattableString path)
     {
         _path = string.Format(
-            path,
-            args.Select(Convert.ToString)
+            path.Format,
+            path.GetArguments().Select(Convert.ToString)
                 .Select(HttpUtility.UrlEncode)
                 .ToArray());
+        return this;
+    }
+
+    public PathAndQueryBuilder WithPathRaw(string path)
+    {
+        _path = path;
         return this;
     }
 
@@ -55,7 +61,7 @@ public class PathAndQueryBuilder
 
     public static implicit operator string(PathAndQueryBuilder b) => b.Build();
 
-    public static PathAndQueryBuilder CreatePath(string path, params object[] args) => new PathAndQueryBuilder().WithPath(path, args);
+    public static PathAndQueryBuilder CreatePath(FormattableString path) => new PathAndQueryBuilder().WithPath(path);
 
     public override string ToString()
     {

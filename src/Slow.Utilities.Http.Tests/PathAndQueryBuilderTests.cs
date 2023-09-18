@@ -8,7 +8,7 @@ public class PathAndQueryBuilderTests
     public void ShouldCreatePath()
     {
         // Given
-        var builder = CreatePath("foo/bar");
+        var builder = CreatePath($"foo/bar");
 
         // When
         var path = builder.Build();
@@ -22,7 +22,7 @@ public class PathAndQueryBuilderTests
     public void ShouldBuildAbsolute()
     {
         // Given
-        var builder = CreatePath("http://example.com/foo/bar/{0}", 8675309);
+        var builder = CreatePath($"http://example.com/foo/bar/{8675309}");
 
         // When
         var result = builder.Build();
@@ -36,7 +36,10 @@ public class PathAndQueryBuilderTests
     public void ShouldBuildPath()
     {
         // Given
-        var builder = CreatePath("foo/{0}/bar/{1}/bat/{2}", "this has", "special/characters?", 8675309);
+        var x = "this has";
+        var y = "special/characters?";
+        var z = 8675309;
+        var builder = CreatePath($"foo/{x}/bar/{y}/bat/{z}");
 
         // When
         var result = builder.Build();
@@ -50,7 +53,7 @@ public class PathAndQueryBuilderTests
     public void ShouldBuildQuery()
     {
         // Given
-        var builder = CreatePath("foo/bar")
+        var builder = CreatePath($"foo/bar")
             .WithQueryParameter("foo", "bar")
             .WithQueryParameter("& this has", "special/characters?")
             .WithQueryParameter("page", 3);
@@ -73,7 +76,7 @@ public class PathAndQueryBuilderTests
     public void ShouldBuildQueryFromObject()
     {
         // Given
-        var builder = CreatePath("foo/bar")
+        var builder = CreatePath($"foo/bar")
             .WithQuery(new
             {
                 foo = "bar",

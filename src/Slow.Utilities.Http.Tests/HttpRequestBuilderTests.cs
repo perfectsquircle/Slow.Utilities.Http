@@ -11,7 +11,7 @@ public class HttpRequestBuilderTests
     public void ShouldCreateGet()
     {
         // Given
-        var builder = Get("foo/bar");
+        var builder = Get($"foo/bar");
 
         // When
         using var request = builder.Build();
@@ -26,7 +26,7 @@ public class HttpRequestBuilderTests
     public void ShouldCreatePut()
     {
         // Given
-        var builder = Put("foo/bar");
+        var builder = Put($"foo/bar");
 
         // When
         using var request = builder.Build();
@@ -41,7 +41,7 @@ public class HttpRequestBuilderTests
     public void ShouldCreatePost()
     {
         // Given
-        var builder = Post("foo/bar");
+        var builder = Post($"foo/bar");
 
         // When
         using var request = builder.Build();
@@ -56,7 +56,7 @@ public class HttpRequestBuilderTests
     public void ShouldCreateDelete()
     {
         // Given
-        var builder = Delete("foo/bar");
+        var builder = Delete($"foo/bar");
 
         // When
         using var request = builder.Build();
@@ -71,7 +71,7 @@ public class HttpRequestBuilderTests
     public void ShouldBuildAbsolute()
     {
         // Given
-        var builder = Get("http://example.com/foo/bar");
+        var builder = Get($"http://example.com/foo/bar");
 
         // When
         using var request = builder.Build();
@@ -87,8 +87,12 @@ public class HttpRequestBuilderTests
     public void ShouldBuildPath()
     {
         // Given
+        var x = "this has";
+        var y = "special/characters?";
+        var z = 8675309;
+
         var builder = new HttpRequestBuilder()
-            .WithPath("foo/{0}/bar/{1}/bat/{2}", "this has", "special/characters?", 8675309);
+            .WithPath($"foo/{x}/bar/{y}/bat/{z}");
 
         // When
         using var request = builder.Build();
@@ -98,11 +102,12 @@ public class HttpRequestBuilderTests
         Assert.Equal("foo/this+has/bar/special%2fcharacters%3f/bat/8675309", request.RequestUri.ToString());
     }
 
+
     [Fact]
     public void ShouldBuildQuery()
     {
         // Given
-        var builder = Get("foo/bar")
+        var builder = Get($"foo/bar")
             .WithQueryParameter("foo", "bar")
             .WithQueryParameter("& this has", "special/characters?")
             .WithQueryParameter("page", 3);
@@ -126,7 +131,7 @@ public class HttpRequestBuilderTests
     public void ShouldBuildQueryFromObject()
     {
         // Given
-        var builder = Get("foo/bar")
+        var builder = Get($"foo/bar")
             .WithQuery(new
             {
                 foo = "bar",
@@ -152,7 +157,7 @@ public class HttpRequestBuilderTests
     public async Task ShouldAddJsonContentFromObjectAsync()
     {
         // Given
-        var builder = Post("foo/bar")
+        var builder = Post($"foo/bar")
             .WithJsonContent(new
             {
                 foo = "bar",
@@ -177,7 +182,7 @@ public class HttpRequestBuilderTests
     public void ShouldAddHeader()
     {
         // Given
-        var builder = Post("foo/bar")
+        var builder = Post($"foo/bar")
             .WithHeader("Authorization", "Bearer qwerty");
 
         // When
@@ -195,7 +200,7 @@ public class HttpRequestBuilderTests
     public void ShouldAddHeaders()
     {
         // Given
-        var builder = Post("foo/bar")
+        var builder = Post($"foo/bar")
             .WithHeaders(h => h.Authorization = new AuthenticationHeaderValue("Bearer", "qwerty"));
 
         // When
@@ -213,12 +218,37 @@ public class HttpRequestBuilderTests
     public async void ShouldAddFormContentFromObject()
     {
         // Given
-        var builder = Post("foo/bar")
+        var builder = Post($"foo/bar")
             .WithFormUrlEncodedContent(new
             {
                 foo = "bar",
                 thisHas = "special/characters?",
                 page = 3,
+            });
+
+        // When
+        using var request = builder.Build();
+
+        // Then
+        Assert.NotNull(request);
+        Assert.Equal(HttpMethod.Post, request.Method);
+        var formString = await request.Content.ReadAsStringAsync();
+        var form = HttpUtility.ParseQueryString(formString);
+        Assert.Equal("bar", form["foo"]);
+        Assert.Equal("special/characters?", form["thisHas"]);
+        Assert.Equal("3", form["page"]);
+    }
+
+    [Fact]
+    public async void ShouldAddFormContentFromDictionary()
+    {
+        // Given
+        var builder = Post($"foo/bar")
+            .WithFormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "foo",  "bar" },
+                { "thisHas",  "special/characters?" },
+                { "page",  "3" },
             });
 
         // When
