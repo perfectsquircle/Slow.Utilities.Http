@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 
 namespace Slow.Utilities.Http;
@@ -124,6 +125,19 @@ public class HttpRequestBuilder
 
     public override string ToString()
     {
-        return Build()?.ToString();
+        StringBuilder sb = new StringBuilder();
+        sb.Append("Method: ").Append(_method);
+        sb.Append(", Path: ").Append(_pathAndQueryBuilder);
+        if (_content is not null)
+        {
+            sb.Append(", Content: ").Append(_content);
+        }
+        var headers = _content == null ? _headers : _headers.Concat(_content.Headers);
+        if (headers.Any())
+        {
+            var headerString = string.Join(Environment.NewLine, headers.Select(h => $"{h.Key}: {string.Join(", ", h.Value)}"));
+            sb.Append(", Headers: ").Append(Environment.NewLine).Append(headerString);
+        }
+        return sb.ToString();
     }
 }
